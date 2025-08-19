@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-
+import React, { useState, useEffect } from "react";
+import  PieChart  from "./PieArcLabel";
 type Transaction = {
   title: string;
-  amount: string; 
+  amount: string;
   type: "income" | "expense";
   category: string;
   date: string;
@@ -10,11 +10,8 @@ type Transaction = {
 
 type Errors = Partial<Record<keyof Transaction, string>>;
 
-interface TransactionFormProps {
-  addTransaction: (transaction: Transaction) => void;
-}
-
-const TransactionForm: React.FC<TransactionFormProps> = ({ addTransaction }) => {
+export default function App() {
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [formData, setFormData] = useState<Transaction>({
     title: "",
     amount: "",
@@ -22,37 +19,31 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ addTransaction }) => 
     category: "",
     date: "",
   });
-
   const [errors, setErrors] = useState<Errors>({});
 
-  const validateField = (name: keyof Transaction, value: string): string => {
-    let error = "";
-    if (name === "title") {
-      if (!/^[A-Za-z\s]*$/.test(value)) {
-        error = "Title must contain only letters";
-      }
-    }
-    if (name === "amount") {
-      if (!value || Number(value) <= 0) {
-        error = "Amount must be positive";
-      }
-    }
-    if (name === "date") {
-      if (value && new Date(value) > new Date()) {
-        error = "Date cannot be in the future";
-      }
-    }
-    return error;
+  useEffect(() => {
+    const saved = localStorage.getItem("transactions");
+    if (saved) setTransactions(JSON.parse(saved));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("transactions", JSON.stringify(transactions));
+  }, [transactions]);
+
+  const validateField = (name: keyof Transaction, value: string) => {
+    if (name === "title" && !/^[A-Za-z\s]*$/.test(value))
+      return "Title must contain only letters";
+    if (name === "amount" && (!value || Number(value) <= 0))
+      return "Amount must be positive";
+    if (name === "date" && value && new Date(value) > new Date())
+      return "Date cannot be in the future";
+    return "";
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-
-    const error = validateField(name as keyof Transaction, value);
-    setErrors({ ...errors, [name]: error });
+    setErrors({ ...errors, [name]: validateField(name as keyof Transaction, value) });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -66,99 +57,104 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ addTransaction }) => 
       setErrors(newErrors);
       return;
     }
-
-    addTransaction(formData);
-    setFormData({
-      title: "",
-      amount: "",
-      type: "income",
-      category: "",
-      date: "",
-    });
+    setTransactions([...transactions, formData]);
+    setFormData({ title: "", amount: "", type: "income", category: "", date: "" });
     setErrors({});
   };
 
+  const totalIncome = transactions
+    .filter((t) => t.type === "income")
+    .reduce((acc, t) => acc + Number(t.amount), 0);
+  const totalExpense = transactions
+    .filter((t) => t.type === "expense")
+    .reduce((acc, t) => acc + Number(t.amount), 0);
+  const balance = totalIncome - totalExpense;
+
   return (
-    <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-      <div>
-        <label className="block text-sm font-medium">Title</label>
-        <input
-          type="text"
-          name="title"
-          placeholder="Enter title"
-          value={formData.title}
-          onChange={handleChange}
-          className={`mt-1 w-full p-2 border rounded-lg 
-            focus:outline-none focus:ring-0 focus:border-gray-300
-            ${errors.title ? "border-red-500" : "border-gray-300"}`}
-        />
-        {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
-      </div>
+    
+    <div className="p-6 min-h-screen bg-gray-100 max-w-3xl mx-auto">
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="bg-white shadow-md p-6 rounded-lg space-y-4">
+        <h2 className="text-xl font-bold mb-2">Add Transaction</h2>
 
-      <div>
-        <label className="block text-sm font-medium">Amount</label>
-        <input
-          type="number"
-          name="amount"
-          placeholder="0"
-          value={formData.amount}
-          onChange={handleChange}
-          className={`mt-1 w-full p-2 border rounded-lg 
-            focus:outline-none focus:ring-0 focus:border-gray-300
-            ${errors.amount ? "border-red-500" : "border-gray-300"}`}
-        />
-        {errors.amount && <p className="text-red-500 text-sm">{errors.amount}</p>}
-      </div>
+        <div>
+          <label className="block font-medium mb-1">Title</label>
+          <input
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            placeholder="Enter title"
+            className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 ${
+              errors.title ? "border-red-500" : "border-gray-300"
+            }`}
+          />
+          {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
+        </div>
 
-      <div>
-        <label className="block text-sm font-medium">Type</label>
-        <select
-          name="type"
-          value={formData.type}
-          onChange={handleChange}
-          className="mt-1 w-full p-2 border rounded-lg focus:outline-none focus:ring-0 focus:border-gray-300"
-        >
-          <option value="income">Income</option>
-          <option value="expense">Expense</option>
-        </select>
-      </div>
+        <div>
+          <label className="block font-medium mb-1">Amount</label>
+          <input
+            name="amount"
+            type="number"
+            value={formData.amount}
+            onChange={handleChange}
+            placeholder="0"
+            className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 ${
+              errors.amount ? "border-red-500" : "border-gray-300"
+            }`}
+          />
+          {errors.amount && <p className="text-red-500 text-sm mt-1">{errors.amount}</p>}
+        </div>
 
-      <div>
-        <label className="block text-sm font-medium">Category</label>
-        <input
-          type="text"
-          name="category"
-          placeholder="Select category"
-          value={formData.category}
-          onChange={handleChange}
-          className="mt-1 w-full  p-2 border rounded-lg focus:outline-none focus:ring-0 focus:border-gray-300"
-        />
-      </div>
+        <div>
+          <label className="block font-medium mb-1">Type</label>
+          <select
+            name="type"
+            value={formData.type}
+            onChange={handleChange}
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 border-gray-300"
+          >
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
+        </div>
 
-      <div className="col-span-2">
-        <label className="block text-sm font-medium">Date</label>
-        <input
-          type="date"
-          name="date"
-          value={formData.date}
-          onChange={handleChange}
-          className={`mt-1 w-full p-2 border rounded-lg 
-            focus:outline-none focus:ring-0 focus:border-gray-300
-            ${errors.date ? "border-red-500" : "border-gray-300"}`}
-        />
-        {errors.date && <p className="text-red-500 text-sm">{errors.date}</p>}
-      </div>
+        <div>
+          <label className="block font-medium mb-1">Category</label>
+          <input
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            placeholder="Enter category"
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 border-gray-300"
+          />
+        </div>
 
-      <div className="col-span-2">
+        <div>
+          <label className="block font-medium mb-1">Date</label>
+          <input
+            name="date"
+            type="date"
+            value={formData.date}
+            onChange={handleChange}
+            className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 ${
+              errors.date ? "border-red-500" : "border-gray-300"
+            }`}
+          />
+          {errors.date && <p className="text-red-500 text-sm mt-1">{errors.date}</p>}
+        </div>
+
         <button
           type="submit"
-          className="bg-blue-500 text-white w-full py-2 rounded-lg hover:bg-blue-600"
+          className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition"
         >
-          Add
+          Add Transaction
         </button>
-      </div>
-    </form>
-  );
-};
+      </form>      
+<PieChart transactions={transactions} />
 
-export default TransactionForm;
+    </div>
+  );
+  
+}
+

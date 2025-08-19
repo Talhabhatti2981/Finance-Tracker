@@ -3,13 +3,14 @@ import TransactionForm from "./component/TransactionForm";
 import TransactionList from "./component/TransactionList";
 import Balance from "./component/Balance";
 import Filters from "./component/Filters";
-import "./App.css";
-
+// import PieArcLabel from "./component/PieArcLabel";
+import "./App.css"
 const App = () => {
   const [transactions, setTransactions] = useState(() => {
     const saved = localStorage.getItem("transactions");
     return saved ? JSON.parse(saved) : [];
   });
+
   const [filter, setFilter] = useState({
     type: "all",
     category: "all",
@@ -37,15 +38,11 @@ const App = () => {
 
   const filteredTransactions = transactions.filter((t) => {
     if (filter.type !== "all" && t.type !== filter.type) return false;
-    if (filter.category !== "all" && t.category !== filter.category)
-      return false;
-    if (filter.startDate && new Date(t.date) < new Date(filter.startDate))
-      return false;
-    if (filter.endDate && new Date(t.date) > new Date(filter.endDate))
-      return false;
+    if (filter.category !== "all" && t.category !== filter.category) return false;
+    if (filter.startDate && new Date(t.date) < new Date(filter.startDate)) return false;
+    if (filter.endDate && new Date(t.date) > new Date(filter.endDate)) return false;
     return true;
   });
-
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
@@ -66,9 +63,9 @@ const App = () => {
           editTransaction={editTransaction}
           deleteTransaction={deleteTransaction}
         />
+        {/* <PieArcLabel/> */}
       </div>
     </div>
   );
 };
-
 export default App;
