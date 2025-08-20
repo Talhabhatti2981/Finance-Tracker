@@ -8,10 +8,12 @@ type Transaction = {
   category: string;
   date: string;
 };
-
 interface TransactionListProps {
   transactions: Transaction[];
-  editTransaction: (id: number, updated: Partial<Transaction>) => void;
+  editTransaction: (
+    id: number,
+    updated: Partial<Transaction> & { amount?: string | number }
+  ) => void;
   deleteTransaction: (id: number) => void;
 }
 
@@ -24,8 +26,13 @@ const TransactionList: React.FC<TransactionListProps> = ({
   const [editData, setEditData] = useState<Partial<Transaction>>({});
 
   const handleSave = (id: number) => {
-    editTransaction(id, editData);
+    const updatedData: Partial<Transaction> & { amount?: string | number } = {
+      ...editData,
+      amount: Number(editData.amount ?? 0),
+    };
+    editTransaction(id, updatedData);
     setEditingId(null);
+    setEditData({});
   };
 
   return (
@@ -54,15 +61,31 @@ const TransactionList: React.FC<TransactionListProps> = ({
               transactions.map((t) => (
                 <tr key={t.id} className="border-b">
                   <td className="p-2">
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-semibold ${
-                        t.type === "income"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      {t.type.toUpperCase()}
-                    </span>
+                    {editingId === t.id ? (
+                      <select
+                        value={editData.type ?? t.type}
+                        onChange={(e) =>
+                          setEditData({
+                            ...editData,
+                            type: e.target.value as "income" | "expense",
+                          })
+                        }
+                        className="border p-1 rounded w-full"
+                      >
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                      </select>
+                    ) : (
+                      <span
+                        className={`px-2 py-1 rounded text-xs font-semibold ${
+                          t.type === "income"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {t.type.toUpperCase()}
+                      </span>
+                    )}
                   </td>
 
                   {editingId === t.id ? (
@@ -70,7 +93,7 @@ const TransactionList: React.FC<TransactionListProps> = ({
                       <td className="p-2">
                         <input
                           type="text"
-                          defaultValue={t.title}
+                          value={editData.title ?? t.title}
                           onChange={(e) =>
                             setEditData({ ...editData, title: e.target.value })
                           }
@@ -80,15 +103,38 @@ const TransactionList: React.FC<TransactionListProps> = ({
                       <td className="p-2">
                         <input
                           type="number"
-                          defaultValue={t.amount}
+                          value={editData.amount ?? t.amount}
                           onChange={(e) =>
-                            setEditData({ ...editData, amount: e.target.value })
+                            setEditData({
+                              ...editData,
+                              amount: e.target.value,
+                            })
                           }
                           className="border p-1 rounded w-full"
                         />
                       </td>
-                      <td className="p-2">{t.date}</td>
-                      <td className="p-2">{t.category}</td>
+                      <td className="p-2">
+                        <input
+                          type="date"
+                          value={editData.date ?? t.date}
+                          onChange={(e) =>
+                            setEditData({ ...editData, date: e.target.value })
+                          }
+                          className="border p-1 rounded w-full"
+                        />
+                      </td>
+                      <td className="p-2">
+                        <input
+                          value={editData.category ?? t.category}
+                          onChange={(e) =>
+                            setEditData({
+                              ...editData,
+                              category: e.target.value,
+                            })
+                          }
+                          className="border p-1 rounded w-full"
+                        />
+                      </td>
                       <td className="p-2 space-x-2">
                         <button
                           onClick={() => handleSave(t.id)}
@@ -97,7 +143,10 @@ const TransactionList: React.FC<TransactionListProps> = ({
                           Save
                         </button>
                         <button
-                          onClick={() => setEditingId(null)}
+                          onClick={() => {
+                            setEditingId(null);
+                            setEditData({});
+                          }}
                           className="text-gray-500"
                         >
                           Cancel
@@ -114,7 +163,13 @@ const TransactionList: React.FC<TransactionListProps> = ({
                         <button
                           onClick={() => {
                             setEditingId(t.id);
-                            setEditData(t);
+                            setEditData({
+                              title: t.title,
+                              amount: t.amount,
+                              date: t.date,
+                              category: t.category,
+                              type: t.type,
+                            });
                           }}
                           className="text-blue-600"
                         >

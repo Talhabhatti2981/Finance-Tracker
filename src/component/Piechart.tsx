@@ -1,19 +1,16 @@
 import React from "react";
 import { PieChart, pieArcLabelClasses } from "@mui/x-charts/PieChart";
+import { Transaction } from "../App";
 
 type PieProps = {
-  transactions: {
-    title: string;
-    amount: string;
-    type: "income" | "expense";
-  }[];
+  transactions: Transaction[];
 };
 
 const TransactionPieChart: React.FC<PieProps> = ({ transactions }) => {
-  const pieData = transactions.map((t, index) => ({
-    id: index,
-    value: Number(t.amount),
-    label: t.title || `Transaction ${index + 1}`,
+  const pieData = transactions.map((t) => ({
+    id: t.id, 
+    value: t.amount,
+    label: t.title || `Transaction ${t.id}`,
   }));
 
   return (
