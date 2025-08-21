@@ -4,19 +4,25 @@ import { Transaction } from "../App";
 
 type PieProps = {
   transactions: Transaction[];
+  theme: string;
 };
 
-const TransactionPieChart: React.FC<PieProps> = ({ transactions }) => {
+const TransactionPieChart: React.FC<PieProps> = ({ transactions, theme }) => {
   const pieData = transactions.map((t) => ({
-    id: t.id, 
-    value: t.amount,
+    id: t.id,
+    value: Number(t.amount),
     label: t.title || `Transaction ${t.id}`,
   }));
 
   return (
-    <div className="bg-white shadow-md rounded-lg flex justify-center items-center p-6">
+    <div
+      className={`shadow-md rounded-lg flex justify-center items-center p-6 transition-colors
+                  ${theme === "light" ? "bg-white text-gray-800" : "bg-gray-800 text-gray-200"}`}
+    >
       {pieData.length === 0 ? (
-        <p>No transactions yet</p>
+        <p className={`${theme === "light" ? "text-gray-500" : "text-gray-400"}`}>
+          No transactions yet
+        </p>
       ) : (
         <PieChart
           series={[
@@ -27,7 +33,14 @@ const TransactionPieChart: React.FC<PieProps> = ({ transactions }) => {
               arcLabelRadius: "60%",
             },
           ]}
-          sx={{ [`& .${pieArcLabelClasses.root}`]: { fontWeight: "bold", fontSize: "10px" } }}
+          sx={{
+            backgroundColor: "transparent",
+            [`& .${pieArcLabelClasses.root}`]: {
+              fontWeight: "bold",
+              fontSize: "10px",
+              fill: "currentColor",
+            },
+          }}
           width={300}
           height={300}
         />

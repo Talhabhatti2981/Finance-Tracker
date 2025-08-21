@@ -8,6 +8,7 @@ type Transaction = {
   category: string;
   date: string;
 };
+
 interface TransactionListProps {
   transactions: Transaction[];
   editTransaction: (
@@ -15,12 +16,14 @@ interface TransactionListProps {
     updated: Partial<Transaction> & { amount?: string | number }
   ) => void;
   deleteTransaction: (id: number) => void;
+  theme: string;
 }
 
 const TransactionList: React.FC<TransactionListProps> = ({
   transactions,
   editTransaction,
   deleteTransaction,
+  theme, 
 }) => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editData, setEditData] = useState<Partial<Transaction>>({});
@@ -36,31 +39,58 @@ const TransactionList: React.FC<TransactionListProps> = ({
   };
 
   return (
-    <div>
-      <h2 className="text-lg font-semibold mb-3">Transactions</h2>
+    <div
+      className={`p-4 rounded-xl shadow-md transition-colors 
+                  ${theme === "light" ? "bg-white text-black" : "bg-gray-800 text-white"}`}
+    >
+      <h2 className="text-xl font-bold mb-4">
+        Transactions
+      </h2>
+
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
+        <table
+          className={`w-full border rounded-lg border-gray-300 ${
+            theme === "light" ? "" : "border-gray-700"
+          }`}
+        >
           <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="p-2 border">Type</th>
-              <th className="p-2 border">Title</th>
-              <th className="p-2 border">Amount</th>
-              <th className="p-2 border">Date</th>
-              <th className="p-2 border">Category</th>
-              <th className="p-2 border">Actions</th>
+            <tr
+              className={`text-sm ${
+                theme === "light"
+                  ? "bg-gray-200 text-gray-700"
+                  : "bg-gray-700 text-gray-200"
+              }`}
+            >
+              <th className="p-3 border border-gray-300 dark:border-gray-600">Type</th>
+              <th className="p-3 border border-gray-300 dark:border-gray-600">Title</th>
+              <th className="p-3 border border-gray-300 dark:border-gray-600">Amount</th>
+              <th className="p-3 border border-gray-300 dark:border-gray-600">Date</th>
+              <th className="p-3 border border-gray-300 dark:border-gray-600">Category</th>
+              <th className="p-3 border border-gray-300 dark:border-gray-600">Actions</th>
             </tr>
           </thead>
-          <tbody>
+
+          <tbody className={`${theme === "light" ? "text-gray-800" : "text-gray-100"}`}>
             {transactions.length === 0 ? (
               <tr>
-                <td colSpan={6} className="p-3 text-center text-gray-500">
+                <td
+                  colSpan={6}
+                  className={`p-4 text-center ${
+                    theme === "light" ? "text-gray-500" : "text-gray-400"
+                  } border border-gray-300 ${theme === "light" ? "" : "border-gray-600"}`}
+                >
                   No transactions available.
                 </td>
               </tr>
             ) : (
               transactions.map((t) => (
-                <tr key={t.id} className="border-b">
-                  <td className="p-2">
+                <tr
+                  key={t.id}
+                  className={`border border-gray-300 ${
+                    theme === "light" ? "" : "border-gray-700"
+                  } hover:bg-gray-50 dark:hover:bg-gray-700 transition`}
+                >
+                  <td className="p-2 text-center">
                     {editingId === t.id ? (
                       <select
                         value={editData.type ?? t.type}
@@ -70,7 +100,11 @@ const TransactionList: React.FC<TransactionListProps> = ({
                             type: e.target.value as "income" | "expense",
                           })
                         }
-                        className="border p-1 rounded w-full"
+                        className={`border p-1 rounded w-full ${
+                          theme === "light"
+                            ? "border-gray-300 bg-white text-black"
+                            : "border-gray-600 bg-gray-900 text-white"
+                        }`}
                       >
                         <option value="income">Income</option>
                         <option value="expense">Expense</option>
@@ -79,8 +113,12 @@ const TransactionList: React.FC<TransactionListProps> = ({
                       <span
                         className={`px-2 py-1 rounded text-xs font-semibold ${
                           t.type === "income"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
+                            ? theme === "light"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-green-900 text-green-300"
+                            : theme === "light"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-red-900 text-red-300"
                         }`}
                       >
                         {t.type.toUpperCase()}
@@ -97,7 +135,11 @@ const TransactionList: React.FC<TransactionListProps> = ({
                           onChange={(e) =>
                             setEditData({ ...editData, title: e.target.value })
                           }
-                          className="border p-1 rounded w-full"
+                          className={`border p-1 rounded w-full ${
+                            theme === "light"
+                              ? "border-gray-300 bg-white text-black"
+                              : "border-gray-600 bg-gray-900 text-white"
+                          }`}
                         />
                       </td>
                       <td className="p-2">
@@ -105,12 +147,13 @@ const TransactionList: React.FC<TransactionListProps> = ({
                           type="number"
                           value={editData.amount ?? t.amount}
                           onChange={(e) =>
-                            setEditData({
-                              ...editData,
-                              amount: e.target.value,
-                            })
+                            setEditData({ ...editData, amount: e.target.value })
                           }
-                          className="border p-1 rounded w-full"
+                          className={`border p-1 rounded w-full ${
+                            theme === "light"
+                              ? "border-gray-300 bg-white text-black"
+                              : "border-gray-600 bg-gray-900 text-white"
+                          }`}
                         />
                       </td>
                       <td className="p-2">
@@ -120,25 +163,32 @@ const TransactionList: React.FC<TransactionListProps> = ({
                           onChange={(e) =>
                             setEditData({ ...editData, date: e.target.value })
                           }
-                          className="border p-1 rounded w-full"
+                          className={`border p-1 rounded w-full ${
+                            theme === "light"
+                              ? "border-gray-300 bg-white text-black"
+                              : "border-gray-600 bg-gray-900 text-white"
+                          }`}
                         />
                       </td>
                       <td className="p-2">
                         <input
                           value={editData.category ?? t.category}
                           onChange={(e) =>
-                            setEditData({
-                              ...editData,
-                              category: e.target.value,
-                            })
+                            setEditData({ ...editData, category: e.target.value })
                           }
-                          className="border p-1 rounded w-full"
+                          className={`border p-1 rounded w-full ${
+                            theme === "light"
+                              ? "border-gray-300 bg-white text-black"
+                              : "border-gray-600 bg-gray-900 text-white"
+                          }`}
                         />
                       </td>
-                      <td className="p-2 space-x-2">
+                      <td className="p-2 space-x-2 text-center">
                         <button
                           onClick={() => handleSave(t.id)}
-                          className="text-green-600"
+                          className={`font-semibold hover:underline ${
+                            theme === "light" ? "text-green-600" : "text-green-400"
+                          }`}
                         >
                           Save
                         </button>
@@ -147,7 +197,9 @@ const TransactionList: React.FC<TransactionListProps> = ({
                             setEditingId(null);
                             setEditData({});
                           }}
-                          className="text-gray-500"
+                          className={`hover:underline ${
+                            theme === "light" ? "text-gray-500" : "text-gray-300"
+                          }`}
                         >
                           Cancel
                         </button>
@@ -159,7 +211,7 @@ const TransactionList: React.FC<TransactionListProps> = ({
                       <td className="p-2">{t.amount} PKR</td>
                       <td className="p-2">{t.date}</td>
                       <td className="p-2">{t.category}</td>
-                      <td className="p-2 space-x-2">
+                      <td className="p-2 space-x-2 text-center">
                         <button
                           onClick={() => {
                             setEditingId(t.id);
@@ -171,13 +223,17 @@ const TransactionList: React.FC<TransactionListProps> = ({
                               type: t.type,
                             });
                           }}
-                          className="text-blue-600"
+                          className={`font-semibold hover:underline ${
+                            theme === "light" ? "text-blue-600" : "text-blue-400"
+                          }`}
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => deleteTransaction(t.id)}
-                          className="text-red-600"
+                          className={`font-semibold hover:underline ${
+                            theme === "light" ? "text-red-600" : "text-red-400"
+                          }`}
                         >
                           Delete
                         </button>

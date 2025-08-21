@@ -3,8 +3,9 @@ import TransactionForm from "./component/TransactionForm";
 import TransactionList from "./component/TransactionList";
 import Balance from "./component/Balance";
 import Filters from "./component/Filters";
-import ThemeToggle from "./component/ThemeToggle";
+import ThemeToggle from "./component/toggle/ThemeToggle";
 import "./App.css";
+
 export type Transaction = {
   id: number;
   title: string;
@@ -13,6 +14,7 @@ export type Transaction = {
   category: string;
   date: string;
 };
+
 export type Filter = {
   type: "all" | "income" | "expense";
   category: string;
@@ -32,6 +34,15 @@ const App: React.FC = () => {
     startDate: "",
     endDate: "",
   });
+  const [theme, setTheme] = useState<string>(() => localStorage.getItem("theme") || "light");
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    localStorage.setItem("theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     localStorage.setItem("transactions", JSON.stringify(transactions));
@@ -62,26 +73,33 @@ const App: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-            <ThemeToggle/>
+    <div
+      className={`min-h-screen p-8 
+                  ${theme === "light" ? "bg-white text-black" : "bg-black text-white"}`}
+    >
+      <ThemeToggle theme={theme} setTheme={setTheme} />
 
-      <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">Personal Finance Tracker</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">
+        Personal Finance Tracker
+      </h1>
 
-      <div className="bg-white shadow rounded-xl p-6 mb-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className={`shadow rounded-xl p-6 mb-6 grid grid-cols-1 md:grid-cols-3 gap-6
+                      ${theme === "light" ? "bg-white" : "bg-gray-800"}`}>
         <div className="md:col-span-2">
-<TransactionForm addTransaction={addTransaction} transactions={transactions} />
+          <TransactionForm addTransaction={addTransaction} transactions={transactions} theme={theme} />
         </div>
         <div>
-          <Balance transactions={filteredTransactions} />
+          <Balance transactions={filteredTransactions} theme={theme} />
         </div>
       </div>
 
-      <div className="bg-white shadow rounded-xl p-6">
-        <Filters filter={filter} setFilter={setFilter} />
+      <div className={`shadow rounded-xl p-6 ${theme === "light" ? "bg-white" : "bg-gray-800"}`}>
+        <Filters filter={filter} setFilter={setFilter} theme={theme} />
         <TransactionList
           transactions={filteredTransactions}
           editTransaction={editTransaction}
           deleteTransaction={deleteTransaction}
+          theme={theme}
         />
       </div>
     </div>
