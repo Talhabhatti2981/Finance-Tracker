@@ -14,6 +14,8 @@ const TransactionPieChart: React.FC<PieProps> = ({ transactions, theme }) => {
     label: t.title || `Transaction ${t.id}`,
   }));
 
+  const labelColor = theme === "dark" ? "#ffffff" : "#000000";
+
   return (
     <div
       className={`shadow-md rounded-lg flex justify-center items-center p-6 transition-colors
@@ -28,7 +30,7 @@ const TransactionPieChart: React.FC<PieProps> = ({ transactions, theme }) => {
           series={[
             {
               data: pieData,
-              arcLabel: (item) => `${item.label}: ${item.value} PKR`,
+              arcLabel: (item) => `${item.label}: ${item.value}pkr`,
               arcLabelMinAngle: 15,
               arcLabelRadius: "60%",
             },
@@ -36,9 +38,12 @@ const TransactionPieChart: React.FC<PieProps> = ({ transactions, theme }) => {
           sx={{
             backgroundColor: "transparent",
             [`& .${pieArcLabelClasses.root}`]: {
-              fontWeight: "bold",
+              fontWeight: "bold",  
               fontSize: "10px",
-              fill: "currentColor",
+              fill: labelColor,
+            },
+            "& .MuiChartsLegend-root": {
+              color: labelColor, 
             },
           }}
           width={300}

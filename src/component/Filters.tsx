@@ -39,7 +39,7 @@ const Filters: React.FC<FiltersProps> = ({ filter, setFilter, theme }) => {
         value={filter.startDate}
         onChange={(e) => setFilter((prev) => ({ ...prev, startDate: e.target.value }))}
         className={`p-2 border rounded-lg transition-colors 
-                    ${theme === "light" ? "bg-white text-black border-gray-300" : "bg-gray-700 text-white border-gray-600"}`}
+            ${theme === "light" ? "bg-white text-black border-gray-300" : "bg-gray-700 text-white border-gray-600"}`}
       />
     </div>
   );

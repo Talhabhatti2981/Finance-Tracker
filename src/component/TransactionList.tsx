@@ -69,7 +69,6 @@ const TransactionList: React.FC<TransactionListProps> = ({
               <th className="p-3 border border-gray-300 dark:border-gray-600">Actions</th>
             </tr>
           </thead>
-
           <tbody className={`${theme === "light" ? "text-gray-800" : "text-gray-100"}`}>
             {transactions.length === 0 ? (
               <tr>

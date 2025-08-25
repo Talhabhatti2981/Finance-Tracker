@@ -140,6 +140,7 @@ export default function TransactionForm({ addTransaction, transactions, theme }:
             type="date"
             value={formData.date}
             onChange={handleChange}
+            max={new Date().toISOString().split("T")[0]}
             className={`w-full p-2 border rounded-md focus:outline-none ${
               errors.date
                 ? "border-red-500"

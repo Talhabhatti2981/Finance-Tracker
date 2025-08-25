@@ -79,7 +79,7 @@ const App: React.FC = () => {
     >
       <ThemeToggle theme={theme} setTheme={setTheme} />
 
-      <h1 className="text-3xl font-bold mb-6 text-center">
+      <h1 className="text-3xl font-bold mb-9 text-center mt-20 ">
         Personal Finance Tracker
       </h1>
 
