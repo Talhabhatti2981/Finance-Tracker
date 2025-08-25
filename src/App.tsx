@@ -4,6 +4,7 @@ import TransactionList from "./component/TransactionList";
 import Balance from "./component/Balance";
 import Filters from "./component/Filters";
 import ThemeToggle from "./component/toggle/ThemeToggle";
+import { supabase } from "./supabaseClient";
 import "./App.css";
 
 export type Transaction = {
@@ -12,7 +13,7 @@ export type Transaction = {
   amount: number;
   type: "income" | "expense";
   category: string;
-  date: string;
+  date: string; 
 };
 
 export type Filter = {
@@ -23,11 +24,7 @@ export type Filter = {
 };
 
 const App: React.FC = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>(() => {
-    const saved = localStorage.getItem("transactions");
-    return saved ? JSON.parse(saved) : [];
-  });
-
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [filter, setFilter] = useState<Filter>({
     type: "all",
     category: "all",
@@ -36,6 +33,58 @@ const App: React.FC = () => {
   });
   const [theme, setTheme] = useState<string>(() => localStorage.getItem("theme") || "light");
   useEffect(() => {
+    const fetchTransactions = async () => {
+      const { data, error } = await supabase
+        .from("transactions")
+        .select("*")
+        .order("date", { ascending: false });
+
+      if (error) {
+        console.error("❌ Error fetching:", error.message);
+      } else if (data) {
+        console.log("✅ Supabase data:", data);
+        setTransactions(data as Transaction[]);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
+  const addTransaction = async (transaction: Omit<Transaction, "id">) => {
+    const { data, error } = await supabase
+      .from("transactions")
+      .insert([{ ...transaction, amount: Number(transaction.amount) }])
+      .select();
+
+    if (error) {
+      console.error("❌ Error adding:", error.message);
+    } else if (data) {
+      setTransactions((prev) => [...prev, data[0] as Transaction]);
+    }
+  };
+  const editTransaction = async (id: number, updated: Partial<Transaction>) => {
+    const { data, error } = await supabase
+      .from("transactions")
+      .update(updated)
+      .eq("id", id)
+      .select();
+
+    if (error) {
+      console.error("❌ Error updating:", error.message);
+    } else if (data) {
+      setTransactions((prev) => prev.map((t) => (t.id === id ? (data[0] as Transaction) : t)));
+    }
+  };
+
+  const deleteTransaction = async (id: number) => {
+    const { error } = await supabase.from("transactions").delete().eq("id", id);
+    if (error) {
+      console.error("❌ Error deleting:", error.message);
+    } else {
+      setTransactions((prev) => prev.filter((t) => t.id !== id));
+    }
+  };
+
+  useEffect(() => {
     if (theme === "dark") {
       document.documentElement.classList.add("dark");
     } else {
@@ -43,26 +92,6 @@ const App: React.FC = () => {
     }
     localStorage.setItem("theme", theme);
   }, [theme]);
-
-  useEffect(() => {
-    localStorage.setItem("transactions", JSON.stringify(transactions));
-  }, [transactions]);
-
-  const addTransaction = (transaction: Omit<Transaction, "id"> & { amount: string | number }) => {
-    setTransactions([...transactions, { id: Date.now(), ...transaction, amount: Number(transaction.amount) }]);
-  };
-
-  const editTransaction = (id: number, updated: Partial<Transaction> & { amount?: string | number }) => {
-    setTransactions(
-      transactions.map((t) =>
-        t.id === id ? { ...t, ...updated, amount: updated.amount !== undefined ? Number(updated.amount) : t.amount } : t
-      )
-    );
-  };
-
-  const deleteTransaction = (id: number) => {
-    setTransactions(transactions.filter((t) => t.id !== id));
-  };
 
   const filteredTransactions = transactions.filter((t) => {
     if (filter.type !== "all" && t.type !== filter.type) return false;

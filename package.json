@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@mui/x-charts": "^8.10.1",
+    "@supabase/supabase-js": "^2.56.0",
     "@tailwindcss/vite": "^4.1.12",
     "framer-motion": "^12.23.12",
     "igniteui-react-charts": "^19.0.1",
