@@ -1,5 +1,5 @@
 import React from "react";
-import { Filter } from "../App";
+import { Filter } from "../../App";
 
 interface FiltersProps {
   filter: Filter;
@@ -30,7 +30,7 @@ const Filters: React.FC<FiltersProps> = ({ filter, setFilter, theme }) => {
         onChange={(e) =>
           setFilter((prev) => ({ ...prev, category: e.target.value || "all" }))
         }
-        className={`p-2 border rounded-lg transition-colors 
+        className={`p-2 border rounded-lg transition-colors
                     ${theme === "light" ? "bg-white text-black border-gray-300" : "bg-gray-700 text-white border-gray-600"}`}
       />
 
