@@ -33,7 +33,7 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({ theme, setTheme }) => {
   return (
     <div
       onClick={toggleTheme}
-      className={`fixed top-4 right-4 w-16 h-8 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-500 shadow-lg
+      className={`absolute top-4 right-4 w-16 h-8 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-500 shadow-lg
         ${theme === "dark" ? "bg-gray-700" : "bg-yellow-400"}`}
     >
       <div

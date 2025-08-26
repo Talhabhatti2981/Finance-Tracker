@@ -117,8 +117,8 @@ const App: React.FC = () => {
         className={`fixed top-0 left-0 h-full w-64 p-6 z-50 transform transition-transform duration-300 md:hidden
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} ${theme === "light" ? "bg-white" : "bg-gray-800"}`}
       >
-        <h2 className="text-2xl font-bold mb-6">Finance Tracker</h2>
-        <nav className="space-y-3">
+        <h2 className="text-2xl font-bold mb-6 mt-10">Finance Tracker</h2>
+        <nav className="space-y-3 font-bold ">
           {["dashboard", "AddTransaction", "balance", "TransactionList" ].map((page) => (
             <button
               key={page}
