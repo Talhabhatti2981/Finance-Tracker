@@ -10,7 +10,7 @@ import Login from "./component/Login/Login";
 import Signup from "./component/signup/Signup";
 import ProfileSection from "./component/ProfileSection/ProfileSection";
 import { supabase } from "./supabaseClient";
-import WeeklyExpenseBarChart from "./component/BarChart/Barchart"; // ✅ updated import
+import WeeklyExpenseBarChart from "./component/BarChart/Barchart";  
 import "./App.css";
 
 export type Transaction = {
@@ -200,7 +200,7 @@ const App: React.FC = () => {
                     </>
                   )}
 
-                  {activePage === "Profile Section" && <ProfileSection />}
+                  {activePage === "Profile Section" && <ProfileSection  theme={theme} />}
                 </main>
               </div>
             ) : (

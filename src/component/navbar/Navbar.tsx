@@ -9,10 +9,9 @@ type NavbarProps = {
   setActivePage: (p: string) => void;
   sidebarOpen: boolean;
   setSidebarOpen: (o: boolean) => void;
-  handleLogout: () => void;  
-  session: any;             
+  handleLogout: () => void;
+  session: any;
 };
-
 const Navbar: React.FC<NavbarProps> = ({
   theme,
   setTheme,
@@ -25,18 +24,29 @@ const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const pages = ["dashboard", "AddTransaction", "TransactionList", "Profile Section"];
 
+  const activeClass = (page: string) =>
+    activePage === page
+      ? theme === "light"
+        ? "bg-gray-300"
+        : "bg-gray-800"
+      : "";
+
+  const hoverClass = theme === "light" ? "hover:bg-gray-300" : "hover:bg-gray-700";
+
   return (
     <>
-      <aside
+       <aside
         className={`hidden md:flex flex-col justify-between w-64 p-6 shadow-lg ${
           theme === "light" ? "bg-white" : "bg-gray-800"
         }`}
       >
         <nav className="space-y-3 font-bold">
           {pages.map((page) => (
-            <button key={page} className={`w-full text-left p-2 rounded transition-colors hover:bg-gray-300 dark:hover:bg-gray-700 ${
-                activePage === page ? "bg-gray-200 dark:bg-gray-700" : ""
-              }`}
+            <button
+              key={page}
+              className={`w-full text-left p-2 rounded transition-colors ${activeClass(
+                page
+              )} ${hoverClass}`}
               onClick={() => setActivePage(page)}
             >
               {page.charAt(0).toUpperCase() + page.slice(1)}
@@ -72,9 +82,9 @@ const Navbar: React.FC<NavbarProps> = ({
           {pages.map((page) => (
             <button
               key={page}
-              className={`w-full text-left p-2 rounded transition-colors hover:bg-gray-300 dark:hover:bg-gray-700 ${
-                activePage === page ? "bg-gray-200 dark:bg-gray-700" : ""
-              }`}
+              className={`w-full text-left p-2 rounded transition-colors ${activeClass(
+                page
+              )} ${hoverClass}`}
               onClick={() => {
                 setActivePage(page);
                 setSidebarOpen(false);
@@ -84,9 +94,9 @@ const Navbar: React.FC<NavbarProps> = ({
             </button>
           ))}
         </nav>
+
         <div className="mt-8 space-y-4">
           <ThemeToggle theme={theme} setTheme={setTheme} />
-
           {session && (
             <button
               onClick={handleLogout}
@@ -116,13 +126,14 @@ const Navbar: React.FC<NavbarProps> = ({
           {session && (
             <button
               onClick={handleLogout}
-              className="px-10 py-2 mr-25 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
+              className="px-10 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
             >
               Logout
             </button>
           )}
         </div>
       </div>
+
       <div className="h-14 md:hidden" />
     </>
   );
