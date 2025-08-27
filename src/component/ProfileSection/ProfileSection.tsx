@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { supabase } from "../../supabaseClient";
 const ProfileSection: React.FC = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
@@ -26,7 +26,6 @@ const ProfileSection: React.FC = () => {
       className="max-w-4xl mx-auto p-6 sm:p-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg flex flex-col gap-8"
       onSubmit={handleSubmit}
     >
-      {/* Delete Account */}
       <div className="flex justify-end">
         <button
           type="button"
@@ -36,10 +35,7 @@ const ProfileSection: React.FC = () => {
           Delete Account
         </button>
       </div>
-
-      {/* Profile Info */}
       <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-        {/* Name & Email */}
         <div className="flex-1 flex flex-col gap-4 w-full order-2 md:order-1">
           <input
             type="text"
@@ -54,8 +50,6 @@ const ProfileSection: React.FC = () => {
             className="w-full p-4 border rounded-lg focus:outline-none text-gray-800 dark:text-gray-200 dark:bg-gray-700"
           />
         </div>
-
-        {/* Profile Image */}
         <div className="flex flex-col items-center gap-4 order-1 md:order-2">
           <div className="w-32 h-32 rounded-full border-2 border-gray-300 overflow-hidden">
             {profileImage ? (
@@ -78,16 +72,12 @@ const ProfileSection: React.FC = () => {
           />
         </div>
       </div>
-
-      {/* Change Password */}
       <input
         type="password"
         name="password"
         placeholder="Change Password"
         className="w-full p-4 border rounded-lg focus:outline-none text-gray-800 dark:text-gray-200 dark:bg-gray-700"
       />
-
-      {/* Save Profile */}
       <button
         type="submit"
         className="w-full px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

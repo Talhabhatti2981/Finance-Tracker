@@ -1,15 +1,16 @@
 import React from "react";
 import { Menu, X } from "lucide-react";
-import { Link } from "react-router-dom";
 import ThemeToggle from "../toggle/ThemeToggle";
 
 type NavbarProps = {
   theme: string;
-  setTheme: (theme: string) => void;
+  setTheme: (t: string) => void;
   activePage: string;
-  setActivePage: (page: string) => void;
+  setActivePage: (p: string) => void;
   sidebarOpen: boolean;
-  setSidebarOpen: (open: boolean) => void;
+  setSidebarOpen: (o: boolean) => void;
+  handleLogout: () => void;  
+  session: any;             
 };
 
 const Navbar: React.FC<NavbarProps> = ({
@@ -19,6 +20,8 @@ const Navbar: React.FC<NavbarProps> = ({
   setActivePage,
   sidebarOpen,
   setSidebarOpen,
+  handleLogout,
+  session,
 }) => {
   const pages = ["dashboard", "AddTransaction", "TransactionList", "Profile Section"];
 
@@ -29,13 +32,9 @@ const Navbar: React.FC<NavbarProps> = ({
           theme === "light" ? "bg-white" : "bg-gray-800"
         }`}
       >
-        
-        
         <nav className="space-y-3 font-bold">
           {pages.map((page) => (
-            <button
-              key={page}
-              className={`w-full text-left p-2 rounded transition-colors hover:bg-gray-300 dark:hover:bg-gray-700 ${
+            <button key={page} className={`w-full text-left p-2 rounded transition-colors hover:bg-gray-300 dark:hover:bg-gray-700 ${
                 activePage === page ? "bg-gray-200 dark:bg-gray-700" : ""
               }`}
               onClick={() => setActivePage(page)}
@@ -48,7 +47,6 @@ const Navbar: React.FC<NavbarProps> = ({
           <ThemeToggle theme={theme} setTheme={setTheme} />
         </div>
       </aside>
-
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
@@ -75,7 +73,7 @@ const Navbar: React.FC<NavbarProps> = ({
             <button
               key={page}
               className={`w-full text-left p-2 rounded transition-colors hover:bg-gray-300 dark:hover:bg-gray-700 ${
-                activePage === page ? "bg-gray-200  dark:bg-gray-700" : ""
+                activePage === page ? "bg-gray-200 dark:bg-gray-700" : ""
               }`}
               onClick={() => {
                 setActivePage(page);
@@ -86,10 +84,17 @@ const Navbar: React.FC<NavbarProps> = ({
             </button>
           ))}
         </nav>
-
         <div className="mt-8 space-y-4">
           <ThemeToggle theme={theme} setTheme={setTheme} />
-          
+
+          {session && (
+            <button
+              onClick={handleLogout}
+              className="w-full px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
+            >
+              Logout
+            </button>
+          )}
         </div>
       </aside>
       <div
@@ -107,27 +112,15 @@ const Navbar: React.FC<NavbarProps> = ({
           <h1 className="font-bold text-lg md:hidden">Finance Tracker</h1>
         </div>
         <div className="hidden md:flex items-center gap-4">
-          <Link
-            to="/Login"
-            className={`px-4 py-2 rounded-lg font-medium transition-colors shadow-sm ${
-              theme === "light"
-                ? "bg-blue-600 text-white hover:bg-blue-700"
-                : "bg-blue-500 text-white hover:bg-blue-600"
-            }`}
-          >
-            Login
-          </Link>
-          <Link
-            to="/Signup"
-            className={`px-4 py-2 rounded-lg font-medium border transition-colors shadow-sm ${
-              theme === "light"
-                ? "border-blue-600 text-blue-600 hover:bg-blue-50"
-                : "border-blue-400 text-blue-400 hover:bg-gray-700"
-            }`}
-          >
-            Sign Up
-          </Link>
           <ThemeToggle theme={theme} setTheme={setTheme} />
+          {session && (
+            <button
+              onClick={handleLogout}
+              className="px-10 py-2 mr-25 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
+            >
+              Logout
+            </button>
+          )}
         </div>
       </div>
       <div className="h-14 md:hidden" />

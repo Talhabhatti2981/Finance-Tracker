@@ -129,7 +129,6 @@ export default function TransactionForm({ addTransaction, transactions, theme }:
         transition={{ delay: 0.5, duration: 0.6 }}
         className="mt-10"
       >
-        <PieChart transactions={transactions} theme={theme} />
       </motion.div>
     </div>
   );
