@@ -23,7 +23,6 @@ const Login: React.FC = () => {
     if (error) {
       alert(error.message);
     } else {
-      alert("Login successful");
       navigate("/");
     }
   };
