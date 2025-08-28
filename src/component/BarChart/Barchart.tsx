@@ -7,18 +7,22 @@ type Props = {
   theme: string;
 };
 
-const chartSetting = {
-  series: [{ dataKey: "expense", label: "Last 7 Days Expense" }],
-  height: 300,
-  margin: { left: 70 },
-};
-
 export default function WeeklyExpenseBarChart({ transactions, theme }: Props) {
-  const [tickPlacement] = React.useState<
-    "start" | "end" | "middle" | "extremities"
-  >("middle");
-
+  const [tickPlacement] = React.useState<"start" | "end" | "middle" | "extremities">("middle");
   const [tickLabelPlacement] = React.useState<"middle" | "tick">("middle");
+  const [marginLeft, setMarginLeft] = React.useState(60);
+
+  // Responsive margin
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) setMarginLeft(0); // small screens
+      else setMarginLeft(60); // large screens
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const last7Days: { day: string; expense: number }[] = [];
@@ -40,6 +44,7 @@ export default function WeeklyExpenseBarChart({ transactions, theme }: Props) {
       expense: total,
     });
   }
+
   const axisLabelColor = theme === "dark" ? "#ffffff" : "#000000";
 
   return (
@@ -55,7 +60,9 @@ export default function WeeklyExpenseBarChart({ transactions, theme }: Props) {
           },
         ]}
         yAxis={[{ tickLabelStyle: { fill: axisLabelColor } }]}
-        {...chartSetting}
+        series={[{ dataKey: "expense", label: "Last 7 Days Expense", color: "#F13439" }]}
+        height={300}
+        margin={{ left: marginLeft }}
       />
     </div>
   );
