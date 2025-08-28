@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import PieChart from "../Piechart/Piechart";
-import { Transaction } from "../../App";
+import { Transaction } from "../App";
 
 type Props = {
   addTransaction: (transaction: Omit<Transaction, "id"> & { amount: string | number }) => void;
@@ -21,11 +20,13 @@ export default function TransactionForm({ addTransaction, transactions, theme }:
   });
 
   const [errors, setErrors] = useState<Errors>({});
-
   const validateField = (name: keyof Omit<Transaction, "id">, value: string) => {
+    if (name === "title" && !value.trim()) return "Title is required";
     if (name === "title" && !/^[A-Za-z\s]*$/.test(value)) return "Title must contain only letters";
     if (name === "amount" && (!value || Number(value) <= 0)) return "Amount must be positive";
+    if (name === "date" && !value) return "Date is required";
     if (name === "date" && value && new Date(value) > new Date()) return "Date cannot be in the future";
+    if (name === "category" && !value.trim()) return "Category is required";
     if (name === "category" && !/^[A-Za-z\s]*$/.test(value)) return "Category must contain only letters";
     return "";
   };
@@ -39,14 +40,17 @@ export default function TransactionForm({ addTransaction, transactions, theme }:
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     let newErrors: Errors = {};
+
     (Object.keys(formData) as (keyof Omit<Transaction, "id">)[]).forEach((key) => {
       const err = validateField(key, formData[key] as string);
       if (err) newErrors[key] = err;
     });
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
+
     addTransaction({ ...formData, amount: Number(formData.amount) });
     setFormData({ title: "", amount: 0, type: "income", category: "", date: "" });
     setErrors({});
@@ -122,14 +126,6 @@ export default function TransactionForm({ addTransaction, transactions, theme }:
           Add Transaction
         </motion.button>
       </motion.form>
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 0.6 }}
-        className="mt-10"
-      >
-      </motion.div>
     </div>
   );
 }
