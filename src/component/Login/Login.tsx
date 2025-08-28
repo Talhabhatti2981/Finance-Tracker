@@ -1,9 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../supabaseClient";
-import React from "react";
+import React, { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,7 +18,7 @@ const Login: React.FC = () => {
       return;
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -26,6 +28,7 @@ const Login: React.FC = () => {
       navigate("/");
     }
   };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 px-4">
       <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-8">
@@ -35,6 +38,7 @@ const Login: React.FC = () => {
         <p className="text-center text-gray-500 dark:text-gray-400 mb-8">
           Please log in to your account
         </p>
+
         <form className="space-y-5" onSubmit={handleLogin}>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -52,21 +56,31 @@ const Login: React.FC = () => {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Password
             </label>
-            <input
-              name="password"
-              type="password"
-              placeholder="Enter your password"
-              required
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none dark:bg-gray-800 dark:text-white"
-            />
+            <div className="relative">
+              <input
+                name="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                required
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none dark:bg-gray-800 dark:text-white pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
+
           <div className="text-end text-sm text-gray-500 dark:text-gray-400">
-            <a
-              href="#"
+            <Link
+              to="/forgot-password"
               className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
             >
-              Forget Password
-            </a>
+              Forgot Password?
+            </Link>
           </div>
           <button
             type="submit"
@@ -75,7 +89,6 @@ const Login: React.FC = () => {
             Login
           </button>
         </form>
-
         <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
           Don’t have an account?{" "}
           <Link
