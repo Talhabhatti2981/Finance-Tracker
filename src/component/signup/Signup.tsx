@@ -1,6 +1,6 @@
 import React from "react";
 import { supabase } from "../../supabaseClient";
-
+import { Link } from "react-router-dom";
 const Signup: React.FC = () => {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,12 +86,14 @@ const Signup: React.FC = () => {
               className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none dark:bg-gray-800 dark:text-white"
             />
           </div>
+          <Link to ="/login">
           <button
             type="submit"
             className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-md transition duration-300"
           >
             Sign Up
           </button>
+          </Link>
         </form>
 
         <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">

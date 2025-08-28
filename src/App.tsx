@@ -40,8 +40,6 @@ const App: React.FC = () => {
     startDate: "",
     period: "all",
   });
-// ...existing code...
-
 const getStartDate = (period: string) => {
   const now = new Date();
   switch (period) {

@@ -19,12 +19,8 @@ export default function WeeklyExpenseBarChart({ transactions, theme }: Props) {
   >("middle");
 
   const [tickLabelPlacement] = React.useState<"middle" | "tick">("middle");
-
-  // 🔹 Today
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-
-  // 🔹 Last 7 days (backwards from today)
   const last7Days: { day: string; expense: number }[] = [];
 
   for (let i = 6; i >= 0; i--) {
@@ -40,12 +36,10 @@ export default function WeeklyExpenseBarChart({ transactions, theme }: Props) {
       .reduce((sum, t) => sum + t.amount, 0);
 
     last7Days.push({
-      day: `${date.getDate()}/${date.getMonth() + 1}`, // e.g., 21/8
+      day: `${date.getDate()}/${date.getMonth() + 1}`,
       expense: total,
     });
   }
-
-  // ✅ Axis label color based on theme
   const axisLabelColor = theme === "dark" ? "#ffffff" : "#000000";
 
   return (
