@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import { supabase } from "../../supabaseClient";
+
 type Props = {
   theme: string;
 };
+const handleSubmit = () =>{
+  alert("Profile saved");
+}
 const ProfileSection: React.FC<Props> = ({ theme }) => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
@@ -50,6 +54,7 @@ const ProfileSection: React.FC<Props> = ({ theme }) => {
       <input
         type="email"
         name="email"
+        onChange={handleSubmit}
         placeholder="Email"
         className={`w-full p-4  rounded-lg focus:outline-none
           ${theme === "light" ? "text-gray-800 bg-gray-200 shadow-lg" : "text-gray-200 bg-gray-700"}`}

@@ -8,19 +8,25 @@ type Props = {
 };
 
 const chartSetting = {
-  series: [{ dataKey: "expense" }],
-  height: 300, 
-  margin: { left: 50, right: 30, top: 20, bottom: 50 },
+  series: [{ dataKey: "expense", label: "Last 7 Days Expense" }],
+  height: 300,
+  margin: { left: 70 },
 };
+
 export default function WeeklyExpenseBarChart({ transactions, theme }: Props) {
   const [tickPlacement] = React.useState<
     "start" | "end" | "middle" | "extremities"
   >("middle");
 
   const [tickLabelPlacement] = React.useState<"middle" | "tick">("middle");
+
+  // 🔹 Today
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+
+  // 🔹 Last 7 days (backwards from today)
   const last7Days: { day: string; expense: number }[] = [];
+
   for (let i = 6; i >= 0; i--) {
     const date = new Date(today);
     date.setDate(today.getDate() - i);
@@ -34,31 +40,29 @@ export default function WeeklyExpenseBarChart({ transactions, theme }: Props) {
       .reduce((sum, t) => sum + t.amount, 0);
 
     last7Days.push({
-      day: `${date.getDate()}/${date.getMonth() + 1}`,
+      day: `${date.getDate()}/${date.getMonth() + 1}`, // e.g., 21/8
       expense: total,
     });
   }
 
+  // ✅ Axis label color based on theme
   const axisLabelColor = theme === "dark" ? "#ffffff" : "#000000";
 
   return (
-    <div className="w-full overflow-x-auto">
-      <div className="min-w-[300px]"> 
-        <BarChart
-          dataset={last7Days}
-          xAxis={[
-            {
-              dataKey: "day",
-              tickPlacement,
-              tickLabelPlacement,
-              tickLabelStyle: { fill: axisLabelColor },
-            },
-          ]}
-          yAxis={[{ tickLabelStyle: { fill: axisLabelColor } }]}
-          {...chartSetting}
-          style={{ width: "100%", height: 300 }}
-        />
-      </div>
+    <div style={{ width: "100%" }}>
+      <BarChart
+        dataset={last7Days}
+        xAxis={[
+          {
+            dataKey: "day",
+            tickPlacement,
+            tickLabelPlacement,
+            tickLabelStyle: { fill: axisLabelColor },
+          },
+        ]}
+        yAxis={[{ tickLabelStyle: { fill: axisLabelColor } }]}
+        {...chartSetting}
+      />
     </div>
   );
 }

@@ -100,7 +100,7 @@ const Navbar: React.FC<NavbarProps> = ({
           {session && (
             <button
               onClick={handleLogout}
-              className="w-full px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
+              className="w-full   px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
             >
               Logout
             </button>
@@ -108,7 +108,7 @@ const Navbar: React.FC<NavbarProps> = ({
         </div>
       </aside>
       <div
-        className={`fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 shadow-md ${
+        className={`fixed  top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 shadow-md ${
           theme === "light" ? "bg-white text-black" : "bg-gray-900 text-white"
         }`}
       >
@@ -121,7 +121,7 @@ const Navbar: React.FC<NavbarProps> = ({
           </button>
           <h1 className="font-bold text-lg md:hidden">Finance Tracker</h1>
         </div>
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex mr-27 items-center gap-4">
           <ThemeToggle theme={theme} setTheme={setTheme} />
           {session && (
             <button
