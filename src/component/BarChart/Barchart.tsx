@@ -11,12 +11,10 @@ export default function WeeklyExpenseBarChart({ transactions, theme }: Props) {
   const [tickPlacement] = React.useState<"start" | "end" | "middle" | "extremities">("middle");
   const [tickLabelPlacement] = React.useState<"middle" | "tick">("middle");
   const [marginLeft, setMarginLeft] = React.useState(60);
-
-  // Responsive margin
   React.useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 1024) setMarginLeft(0); // small screens
-      else setMarginLeft(60); // large screens
+      if (window.innerWidth < 1024) setMarginLeft(0); 
+      else setMarginLeft(60);
     };
     handleResize();
     window.addEventListener("resize", handleResize);
