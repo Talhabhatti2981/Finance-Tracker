@@ -205,7 +205,6 @@ const addTransaction = async (transaction: Omit<Transaction, "id">) => {
                       <TransactionPieChart transactions={filteredTransactions} theme={theme} />
                     </div>
                   )}
-
                   {activePage === "AddTransaction" && (
                     <TransactionForm addTransaction={addTransaction} transactions={transactions} theme={theme} />
                   )}
