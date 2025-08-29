@@ -36,6 +36,7 @@ const ProfileSection: React.FC<Props> = ({ theme }) => {
     }
   };
 
+
   const handleDeleteAccount = async () => {
     const confirmed = window.confirm("Are you sure you want to delete your account?");
     if (!confirmed) return;
