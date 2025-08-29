@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 type Transaction = {
   id: number;
@@ -37,6 +39,46 @@ const TransactionList: React.FC<TransactionListProps> = ({
     setEditingId(null);
     setEditData({});
   };
+  const downloadPDF = () => {
+    console.log("Downloading transactions report");
+
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text("Transactions Report", 14, 20);
+
+    const tableColumn = ["Title", "Amount", "Type", "Category", "Date"];
+    const tableRows: any[] = [];
+
+    transactions.forEach((t) => {
+      const row = [t.title, t.amount, t.type, t.category, t.date];
+      tableRows.push(row);
+    });
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 30,
+    });
+
+    const income = transactions
+      .filter((t) => t.type === "income")
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+    const expense = transactions
+      .filter((t) => t.type === "expense")
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+    const balance = income - expense;
+
+    const finalY = (doc as any).lastAutoTable.finalY || 40;
+    doc.setFontSize(14);
+    doc.text(`Total Income: ${income}`, 14, finalY + 10);
+    doc.text(`Total Expense: ${expense}`, 14, finalY + 20);
+    doc.text(`Balance: ${balance}`, 14, finalY + 30);
+
+    doc.save("transactions.pdf");
+
+    console.log(" PDF downloaded successfully.");
+    alert("Transactions report has been downloaded successfully!");
+  };
 
   return (
     <div
@@ -44,7 +86,15 @@ const TransactionList: React.FC<TransactionListProps> = ({
         ${theme === "light" ? "bg-white text-black" : "bg-gray-800 text-white"}
       `}
     >
-      <h2 className="text-2xl font-bold mb-6">Transactions</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Transactions</h2>
+        <button
+          onClick={downloadPDF}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+        >
+          Download PDF
+        </button>
+      </div>
       <div className="hidden md:block overflow-x-auto">
         <table
           className={`w-full border rounded-xl overflow-hidden shadow-sm text-sm lg:text-base 
@@ -283,5 +333,4 @@ const TransactionList: React.FC<TransactionListProps> = ({
     </div>
   );
 };
-
 export default TransactionList;

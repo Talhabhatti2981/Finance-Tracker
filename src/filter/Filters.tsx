@@ -1,5 +1,5 @@
 import React from "react";
-import { Filter } from "../../App";
+import { Filter } from "../App";
 
 interface FiltersProps {
   filter: Filter;

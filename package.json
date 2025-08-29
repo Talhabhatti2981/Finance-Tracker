@@ -16,6 +16,8 @@
     "framer-motion": "^12.23.12",
     "igniteui-react-charts": "^19.0.1",
     "igniteui-react-core": "^19.0.1",
+    "jspdf": "^3.0.2",
+    "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.541.0",
     "react": "^18.3.1",
     "react-countup": "^6.5.3",
