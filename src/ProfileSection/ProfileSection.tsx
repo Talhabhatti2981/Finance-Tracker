@@ -14,10 +14,10 @@ const ProfileSection: React.FC<Props> = ({ theme }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUser  = async () => {
       const {
         data: { user },
-      } = await supabase.auth.getUser();
+      } = await supabase.auth.getUser ();
 
       if (user) {
         setEmail(user.email || "");
@@ -26,7 +26,7 @@ const ProfileSection: React.FC<Props> = ({ theme }) => {
       }
     };
 
-    fetchUser();
+    fetchUser ();
   }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,26 +36,57 @@ const ProfileSection: React.FC<Props> = ({ theme }) => {
     }
   };
 
-
   const handleDeleteAccount = async () => {
     const confirmed = window.confirm("Are you sure you want to delete your account?");
     if (!confirmed) return;
 
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await supabase.auth.getUser ();
 
-    if (user) {
- 
-      await supabase.auth.signOut();
-      alert("Your account has been deleted.");
-      navigate("/login");
+    if (!user) {
+      alert("No user found.");
+      return;
+    }
+
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.access_token) {
+        alert("User  is not authenticated.");
+        return;
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_FUNCTIONS_URL}/delete-user`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Your account has been deleted permanently.");
+        await supabase.auth.signOut();
+        navigate("/login");
+      } else {
+        alert("Error: " + result.error);
+      }
+    } catch (err: any) {
+      alert("Unexpected error: " + err.message);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { error: updateError } = await supabase.auth.updateUser({
+    const { error: updateError } = await supabase.auth.updateUser ({
       data: {
         full_name: name,
         avatar_url: profileImage,
@@ -67,7 +98,7 @@ const ProfileSection: React.FC<Props> = ({ theme }) => {
       return;
     }
     if (password) {
-      const { error: passError } = await supabase.auth.updateUser({
+      const { error: passError } = await supabase.auth.updateUser ({
         password: password,
       });
 
@@ -83,11 +114,12 @@ const ProfileSection: React.FC<Props> = ({ theme }) => {
 
   return (
     <form
-      className={`max-w-4xl mx-auto p-6 sm:p-8 rounded-xl shadow-lg flex flex-col gap-8
-        ${theme === "light" ? "bg-white text-gray-800" : "bg-gray-800 text-gray-200"}`}
+      className={`max-w-4xl mx-auto p-6 sm:p-8 rounded-xl shadow-lg flex flex-col gap-8 ${
+        theme === "light" ? "bg-white text-gray-800" : "bg-gray-800 text-gray-200"
+      }`}
       onSubmit={handleSubmit}
     >
-            <div className="flex justify-end">
+      <div className="flex justify-end">
         <button
           type="button"
           onClick={handleDeleteAccount}
@@ -104,8 +136,11 @@ const ProfileSection: React.FC<Props> = ({ theme }) => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Name"
-            className={`w-full p-4 rounded-lg focus:outline-none 
-              ${theme === "light" ? "text-gray-800 bg-gray-200 shadow-lg" : "text-gray-200 bg-gray-700"}`}
+            className={`w-full p-4 rounded-lg focus:outline-none ${
+              theme === "light"
+                ? "text-gray-800 bg-gray-200 shadow-lg"
+                : "text-gray-200 bg-gray-700"
+            }`}
           />
           <input
             type="email"
@@ -113,8 +148,11 @@ const ProfileSection: React.FC<Props> = ({ theme }) => {
             value={email}
             readOnly
             placeholder="Email"
-            className={`w-full p-4 rounded-lg focus:outline-none
-              ${theme === "light" ? "text-gray-800 bg-gray-200 shadow-lg" : "text-gray-200 bg-gray-700"}`}
+            className={`w-full p-4 rounded-lg focus:outline-none ${
+              theme === "light"
+                ? "text-gray-800 bg-gray-200 shadow-lg"
+                : "text-gray-200 bg-gray-700"
+            }`}
           />
         </div>
         <div className="flex flex-col items-center gap-4 order-1 md:order-2">
@@ -135,8 +173,11 @@ const ProfileSection: React.FC<Props> = ({ theme }) => {
             type="file"
             accept="image/*"
             onChange={handleImageChange}
-            className={`p-2 rounded-lg
-              ${theme === "light" ? "text-gray-800 bg-gray-200 shadow-lg" : "text-gray-200 bg-gray-700"}`}
+            className={`p-2 rounded-lg ${
+              theme === "light"
+                ? "text-gray-800 bg-gray-200 shadow-lg"
+                : "text-gray-200 bg-gray-700"
+            }`}
           />
         </div>
       </div>
@@ -146,8 +187,11 @@ const ProfileSection: React.FC<Props> = ({ theme }) => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Change Password"
-        className={`w-full p-4 rounded-lg focus:outline-none
-          ${theme === "light" ? "text-gray-800 bg-gray-200 shadow-lg" : "text-gray-200 bg-gray-700"}`}
+        className={`w-full p-4 rounded-lg focus:outline-none ${
+          theme === "light"
+            ? "text-gray-800 bg-gray-200 shadow-lg"
+            : "text-gray-200 bg-gray-700"
+        }`}
       />
       <button
         type="submit"

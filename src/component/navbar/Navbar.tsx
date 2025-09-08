@@ -1,7 +1,6 @@
 import React from "react";
 import { Menu, X } from "lucide-react";
 import ThemeToggle from "../toggle/ThemeToggle";
-
 type NavbarProps = {
   theme: string;
   setTheme: (t: string) => void;
@@ -30,10 +29,8 @@ const Navbar: React.FC<NavbarProps> = ({
         ? "bg-gray-300"
         : "bg-gray-800"
       : "";
-
   const hoverClass = theme === "light" ? "hover:bg-gray-300" : "hover:bg-gray-700";
-
-  return (
+return (
     <>
        <aside
         className={`hidden md:flex flex-col justify-between w-64 p-6 shadow-lg ${
@@ -77,8 +74,7 @@ const Navbar: React.FC<NavbarProps> = ({
             <X size={22} />
           </button>
         </div>
-
-        <nav className="flex-1 space-y-3 font-bold">
+    <nav className="flex-1 space-y-3 font-bold">
           {pages.map((page) => (
             <button
               key={page}
@@ -122,7 +118,7 @@ const Navbar: React.FC<NavbarProps> = ({
           <h1 className="font-bold text-lg md:hidden">Finance Tracker</h1>
         </div>
         <div className="hidden md:flex mr-27 items-center gap-4">
-          <ThemeToggle theme={theme} setTheme={setTheme} />
+      <ThemeToggle theme={theme} setTheme={setTheme} />
           {session && (
             <button
               onClick={handleLogout}
