@@ -48,7 +48,6 @@ const Signup: React.FC = () => {
         email,
         password,
         options: {
-          // redirect to login page after email confirmation
           emailRedirectTo: `${window.location.origin}/login`,
         },
       });
