@@ -77,65 +77,65 @@ const App: React.FC = () => {
     await supabase.auth.signOut();
     setSession(null);
   };
-useEffect(() => {
-  const handleUrlHash = async () => {
-    if (window.location.hash.includes("access_token")) {
-      const hashParams = new URLSearchParams(window.location.hash.substring(1));
-      const type = hashParams.get("type");
 
-      const { data } = await supabase.auth.getSession();
+  useEffect(() => {
+    const handleUrlHash = async () => {
+      if (window.location.hash.includes("access_token")) {
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const type = hashParams.get("type");
 
-      if (data?.session) {
-        if (!data.session.user.email_confirmed_at) {
+        const { data } = await supabase.auth.getSession();
+
+        if (data?.session) {
+          if (!data.session.user.email_confirmed_at) {
+            await supabase.auth.signOut();
+            window.history.replaceState({}, document.title, "/login");
+          } else {
+            setSession(data.session);
+
+            // recovery → redirect to update-password
+            if (type === "recovery") {
+              window.history.replaceState({}, document.title, "/update-password");
+            } else {
+              window.history.replaceState({}, document.title, "/");
+            }
+          }
+        }
+      }
+    };
+
+    handleUrlHash();
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session?.user.email_confirmed_at) {
+        setSession(data.session);
+      }
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session) {
+        if (!session.user.email_confirmed_at) {
           await supabase.auth.signOut();
+          setSession(null);
           window.history.replaceState({}, document.title, "/login");
         } else {
-          setSession(data.session);
-
-          // 👇 If reset password link (type=recovery), stay on update-password
-          if (type === "recovery") {
+          setSession(session);
+          if (window.location.hash.includes("type=recovery")) {
             window.history.replaceState({}, document.title, "/update-password");
           } else {
             window.history.replaceState({}, document.title, "/");
           }
         }
-      }
-    }
-  };
-
-  handleUrlHash();
-
-  supabase.auth.getSession().then(({ data }) => {
-    if (data.session?.user.email_confirmed_at) {
-      setSession(data.session);
-    }
-  });
-
-  const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
-    if (session) {
-      if (!session.user.email_confirmed_at) {
-        await supabase.auth.signOut();
+      } else {
         setSession(null);
         window.history.replaceState({}, document.title, "/login");
-      } else {
-        setSession(session);
-        // 👇 Recovery case check here too
-        if (window.location.hash.includes("type=recovery")) {
-          window.history.replaceState({}, document.title, "/update-password");
-        } else {
-          window.history.replaceState({}, document.title, "/");
-        }
       }
-    } else {
-      setSession(null);
-      window.history.replaceState({}, document.title, "/login");
-    }
-  });
+    });
 
-  return () => {
-    listener.subscription.unsubscribe();
-  };
-}, []);
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     if (!session) return;
@@ -222,7 +222,7 @@ useEffect(() => {
       <Routes>
         <Route path="/login" element={session ? <Navigate to="/" /> : <Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-<Route path="/update-password" element={<UpdatePassword />} />
+        <Route path="/update-password" element={<UpdatePassword />} />
         <Route path="/signup" element={session ? <Navigate to="/" /> : <Signup />} />
 
         <Route
