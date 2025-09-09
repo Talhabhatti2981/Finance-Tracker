@@ -39,7 +39,7 @@ const Signup: React.FC = () => {
     const confirmPassword = formData.get("confirmPassword") as string;
 
     if (password !== confirmPassword) {
-      setErrorMessage("⚠️ Passwords do not match!");
+      setErrorMessage(" Passwords do not match!");
       return;
     }
 
@@ -48,12 +48,12 @@ const Signup: React.FC = () => {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
+          emailRedirectTo: `${window.location.origin}/login`,
         },
       });
 
       if (error) {
-        setErrorMessage(`⚠️ ${error.message}`);
+        setErrorMessage(` ${error.message}`);
         return;
       }
 
@@ -64,7 +64,7 @@ const Signup: React.FC = () => {
       setSuccessMessage("Sign up successful! Please check your email to confirm your account.");
     } catch (err) {
       console.error("Signup error:", err);
-      setErrorMessage("⚠️ Something went wrong. Please try again.");
+      setErrorMessage(" Something went wrong. Please try again.");
     }
   };
 
@@ -163,10 +163,7 @@ const Signup: React.FC = () => {
 
         <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
           Already have an account?{" "}
-          <a
-            href="/login"
-            className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
-          >
+          <a href="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
             Login
           </a>
         </div>

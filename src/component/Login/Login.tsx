@@ -22,10 +22,12 @@ const Login: React.FC = () => {
       email,
       password,
     });
+
     if (error) {
       alert(error.message);
     } else {
-      navigate("/");
+      // after login redirect to dashboard
+      navigate("/dashboard");
     }
   };
 
