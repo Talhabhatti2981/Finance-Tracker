@@ -77,7 +77,6 @@ const App: React.FC = () => {
     await supabase.auth.signOut();
     setSession(null);
   };
-
   useEffect(() => {
     const handleUrlHash = async () => {
       if (window.location.hash.includes("access_token")) {
@@ -92,8 +91,6 @@ const App: React.FC = () => {
             window.history.replaceState({}, document.title, "/login");
           } else {
             setSession(data.session);
-
-            // recovery → redirect to update-password
             if (type === "recovery") {
               window.history.replaceState({}, document.title, "/update-password");
             } else {
