@@ -7,9 +7,15 @@ const ForgotPassword: React.FC = () => {
 
   const handleForgot = async (e: React.FormEvent) => {
     e.preventDefault();
+    const redirectUrl =
+      window.location.hostname === "localhost"
+        ? "http://localhost:5173/Update-password"
+        : "https://finance-tracker-eta-two.vercel.app/update-password";
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "http://localhost:5173/Update-password",
-});
+      redirectTo: redirectUrl,
+    });
+
     if (error) setMessage(error.message);
     else setMessage("Password reset email sent! Check your inbox.");
   };
