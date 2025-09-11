@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import TransactionForm from "./Transactionform/TransactionForm";
 import TransactionList from "./TransactionList/TransactionList";
 import Balance from "./Balance/Balance";
@@ -77,41 +77,62 @@ const App: React.FC = () => {
     await supabase.auth.signOut();
     setSession(null);
   };
+  useEffect(() => {
+    const handleUrlHash = async () => {
+      if (window.location.hash.includes("access_token")) {
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const type = hashParams.get("type");
 
- useEffect(() => {
-  const handleUrlHash = async () => {
-    if (window.location.hash.includes("access_token")) {
-      const { data, error } = await supabase.auth.getSession();
+        const { data } = await supabase.auth.getSession();
 
-      // Agar session mil gaya to set karo
-      if (data?.session) {
-        setSession(data.session);
-        // URL clean karo
-        window.history.replaceState({}, document.title, "/");
+        if (data?.session) {
+          if (!data.session.user.email_confirmed_at) {
+            await supabase.auth.signOut();
+            window.history.replaceState({}, document.title, "/login");
+          } else {
+            setSession(data.session);
+            if (type === "recovery") {
+              window.history.replaceState({}, document.title, "/update-password");
+            } else {
+              window.history.replaceState({}, document.title, "/");
+            }
+          }
+        }
       }
-    }
-  };
+    };
 
-  handleUrlHash();
+    handleUrlHash();
 
-  supabase.auth.getSession().then(({ data }) => {
-    if (data.session) setSession(data.session);
-  });
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session?.user.email_confirmed_at) {
+        setSession(data.session);
+      }
+    });
 
-  const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-    setSession(session);
-    if (session) {
-      window.history.replaceState({}, document.title, "/");
-    } else {
-      window.history.replaceState({}, document.title, "/login");
-    }
-  });
+    const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session) {
+        if (!session.user.email_confirmed_at) {
+          await supabase.auth.signOut();
+          setSession(null);
+          window.history.replaceState({}, document.title, "/login");
+        } else {
+          setSession(session);
+          if (window.location.hash.includes("type=recovery")) {
+            window.history.replaceState({}, document.title, "/update-password");
+          } else {
+            window.history.replaceState({}, document.title, "/");
+          }
+        }
+      } else {
+        setSession(null);
+        window.history.replaceState({}, document.title, "/login");
+      }
+    });
 
-  return () => {
-    listener.subscription.unsubscribe();
-  };
-}, []);
-
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     if (!session) return;
