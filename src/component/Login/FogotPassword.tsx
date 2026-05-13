@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "../../supabaseClient";
+import { getAppUrl } from "../../authUrl";
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -7,10 +8,7 @@ const ForgotPassword: React.FC = () => {
 
   const handleForgot = async (e: React.FormEvent) => {
     e.preventDefault();
-    const redirectUrl =
-      window.location.hostname === "localhost"
-        ? "http://localhost:5173/update-password"
-        : "https://finance-tracker-eta-two.vercel.app/update-password";
+    const redirectUrl = getAppUrl("/update-password");
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl,
     });
