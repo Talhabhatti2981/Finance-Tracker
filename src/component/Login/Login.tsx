@@ -27,7 +27,7 @@ const Login: React.FC = () => {
       alert(error.message);
     } else {
       // after login redirect to dashboard
-      navigate("/dashboard");
+      navigate("/");
     }
   };
 
