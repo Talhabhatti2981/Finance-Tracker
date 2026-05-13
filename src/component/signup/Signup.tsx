@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { supabase } from "../../supabaseClient";
+import { getAppUrl } from "../../authUrl";
 
 const Signup: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -48,7 +49,7 @@ const Signup: React.FC = () => {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
+          emailRedirectTo: getAppUrl("/"),
         },
       });
 
